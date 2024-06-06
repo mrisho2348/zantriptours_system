@@ -1,0 +1,78 @@
+{% load static %}
+<div class="header">
+    <div class="top_header">
+       <div class="container">
+          <div class="row">
+             <div class="col-md-12">
+                <div class="select_main">
+                   <div class="sign">
+                      <div class="niceCountryInputSelector se_flag" style="width: 200px;" data-selectedcountry="US" data-showspecial="false" data-showflags="true" data-i18nall="All selected"
+                         data-i18nnofilter="No selection" data-i18nfilter="Filter" data-onchangecallback="onChangeCallback" />
+                      </div>
+                      <span> <a href="{% url "login" %}">Sign Up</a> </span>   
+                   </div>
+                   <ul class="top_infomation">
+                      <li><img src="{% static 'images/ti_call.png' %}" alt="#"/><a href="https://api.whatsapp.com/send/?phone=255779797122&text&type=phone_number&app_absent=0">Call/Whatsap : +255 779 797 122</a></li>
+                      <li><img src="{% static 'images/ti_mail.png' %}" alt="#"/><a href="Javascript:void(0)"> demo@gmail.com</a></li>
+                   </ul>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+    <div class="header_midil">
+       <div class="container">
+          <div class="row d_flex">
+             <div class=" col-md-2 col-sm-3 logo_section">
+                <div class="full">
+                   <div class="center-desk">
+                      <div id="logo">
+                         <a href="{% url "home" %}"><img class="img-thumbnail" width="100px" src="{% static 'images/ZanTrip.jpg' %}" alt="#" /></a>
+                      </div>
+                   </div>
+                </div>
+             </div>
+             <div class="col-sm-9 col-md-8">
+                <nav class="navigation navbar navbar-expand-md navbar-dark ">
+                   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+                   <span class="navbar-toggler-icon"></span>
+                   </button>
+                   <div class="collapse navbar-collapse" id="navbarsExample04">
+                      <ul class="navbar-nav mr-auto">
+                         <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                {% url 'home' as home %}  
+                               <a class="nav-link {% if request.path == home %}active{% endif %}" href="{% url "home" %}">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                {% url 'about' as about %}  
+                               <a class="nav-link {% if request.path == about %}active{% endif %}" href="{% url "about" %}">About</a>
+                            </li>
+                            <li class="nav-item">
+                                {% url 'packages' as packages %}  
+                               <a class="nav-link {% if request.path == packages %}active{% endif %}" href="{% url "packages" %}">Hotels </a>
+                            </li>                           
+                            <li class="nav-item">
+                                {% url 'feedback' as feedback %}  
+                               <a class="nav-link {% if request.path == feedback %}active{% endif %}" href="{% url "feedback" %}">feedback</a>
+                            </li>
+                            <li class="nav-item">
+                                {% url 'client' as client %}  
+                               <a class="nav-link {% if request.path == client %}active{% endif %}" href="{% url "client" %}">client </a>
+                            </li>
+                            <li class="nav-item">
+                                {% url 'blog' as blog %}  
+                               <a class="nav-link {% if request.path == blog %}active{% endif %}" href="{% url "blog" %}">Transport</a>
+                            </li>
+                            <li class="nav-item">
+                                {% url 'contact' as contact %}  
+                               <a class="nav-link {% if request.path == contact %}active{% endif %}" href="{% url "contact" %}">Contact</a>
+                            </li>
+                      </ul>
+                   </div>
+                </nav>
+             </div>          
+          </div>
+       </div>
+    </div>
+ </div>

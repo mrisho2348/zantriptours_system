@@ -1,0 +1,326 @@
+{% extends 'admin_template/base_template.html' %}
+
+{% block title %}
+Activity List
+{% endblock title %}
+{% block breadcrumb %}
+{% include "admin_template/modal_form.html" %}
+<a class="btn btn-primary float-right" type="button" data-toggle="modal" data-target="#activityModal">
+    <i class="fas fa-plus"></i>add Activity
+</a>
+<a class="btn btn-success float-right mr-2" href="{% url 'import_activity_record' %}">
+    <i class="fas fa-file-import"></i> Import Activity 
+  </a>
+{% endblock breadcrumb %}
+{% load static %}
+{% block main_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3  class="header-title text-center mt-0 mb-1  text-uppercase">Activity List</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover text-nowrap table-responsive-sm table-bordered table-striped table-sm  display" id="example" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Duration (Hours)</th>
+                                    <th>Difficulty Level</th>
+                                    <th>Created At</th>
+                                    <th>Updated At</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in activities %}
+                                <tr>
+                                    <td>{{ activity.name }}</td>
+                                    <td>{{ activity.description }}</td>
+                                    <td>{{ activity.duration_hours }}</td>
+                                    <td>{{ activity.difficulty_level }}</td>
+                                    <td>{{ activity.created_at }}</td>
+                                    <td>{{ activity.updated_at }}</td>
+                                    <td >
+                                        <button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#editActivityModal{{ activity.id }}"  data-toggle="tooltip" title="Edit">
+                                            <i class="fa fa-edit text-white"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteActivityModal{{ activity.id }}"  data-toggle="tooltip" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>   
+                                      
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="activityModal" tabindex="-1" role="dialog" aria-labelledby="activityModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="activityModalLabel">Add Activity</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea class="form-control" id="description" name="description"></textarea>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="duration">Duration (hours):</label>
+                    <input type="number" class="form-control" id="duration" name="duration">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="difficulty">Difficulty Level:</label>
+                    <select class="form-control" id="difficulty" name="difficulty">
+                      <option value="EASY">Easy</option>
+                      <option value="MODERATE">Moderate</option>
+                      <option value="DIFFICULT">Difficult</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">              
+                  <div id="responseMessageContainer"></div>
+                </div>          
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="saveActivityBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    $(document).ready(function() {
+      // Handle form submission
+      $('#saveActivityBtn').click(function() {
+        var name = $('#name').val();
+        var description = $('#description').val();
+        var duration = $('#duration').val();
+        var difficulty = $('#difficulty').val();
+  
+        // Send data to the server using AJAX
+        $.ajax({
+          url: '{% url "save_activity" %}', // Replace with your server endpoint
+          method: 'POST',
+          data: {
+            name: name,
+            description: description,
+            duration: duration,
+            difficulty: difficulty
+          },
+          success: function(response) {
+            // Display response message
+            $('#responseMessageContainer').html('<div class="alert alert-' + (response.status ? 'success' : 'danger') + '" role="alert">' + response.message + '</div>');
+            // Close the modal if the operation was successful
+            if (response.status) {
+              $('#activityModal').modal('hide');
+              location.reload(true)
+            }
+          },
+          error: function(xhr, status, error) {
+            // Handle error response from the server
+            $('#responseMessageContainer').html('<div class="alert alert-danger" role="alert">Failed to save activity. Please try again later.</div>');
+          }
+        });
+      });
+    });
+  </script>
+  
+  {% for activity in activities %}
+  <!-- Modal -->
+  <div class="modal fade" id="editActivityModal{{ activity.id }}" tabindex="-1" role="dialog" aria-labelledby="editActivityModalLabel{{ activity.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editActivityModalLabel{{ activity.id }}">Edit Activity</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="name{{ activity.id }}">Name:</label>
+                    <input type="text" class="form-control" id="name{{ activity.id }}" name="name" value="{{ activity.name }}">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="description{{ activity.id }}">Description:</label>
+                    <textarea class="form-control" id="description{{ activity.id }}" name="description">{{ activity.description }}</textarea>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="duration{{ activity.id }}">Duration (hours):</label>
+                    <input type="number" class="form-control" id="duration{{ activity.id }}" name="duration" value="{{ activity.duration_hours }}">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="difficulty{{ activity.id }}">Difficulty Level:</label>
+                    <select class="form-control" id="difficulty{{ activity.id }}" name="difficulty">
+                      <option value="EASY" {% if activity.difficulty_level == 'EASY' %} selected {% endif %}>Easy</option>
+                      <option value="MODERATE" {% if activity.difficulty_level == 'MODERATE' %} selected {% endif %}>Moderate</option>
+                      <option value="DIFFICULT" {% if activity.difficulty_level == 'DIFFICULT' %} selected {% endif %}>Difficult</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">              
+                  <div id="responseMessageContainer{{ activity.id }}"></div>
+                </div>          
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary saveActivityBtn" data-activity-id="{{ activity.id }}">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      // Handle form submission
+      $('.saveActivityBtn').click(function() {
+        var activityId = $(this).data('activity-id');
+        var name = $('#name' + activityId).val();
+        var description = $('#description' + activityId).val();
+        var duration = $('#duration' + activityId).val();
+        var difficulty = $('#difficulty' + activityId).val();
+
+        // Send data to the server using AJAX
+        $.ajax({
+          url: '{% url "save_activity" %}', // Replace with your server endpoint
+          method: 'POST',
+          data: {
+            name: name,
+            description: description,
+            duration: duration,
+            difficulty: difficulty,
+            activity_id: activityId  // Pass activity ID for editing
+          },
+          success: function(response) {
+            // Display response message
+            $('#responseMessageContainer' + activityId).html('<div class="alert alert-' + (response.status ? 'success' : 'danger') + '" role="alert">' + response.message + '</div>');
+            // Close the modal if the operation was successful
+            if (response.status) {
+              $('#editActivityModal' + activityId).modal('hide');
+              location.reload(true)
+            }
+          },
+          error: function(xhr, status, error) {
+            // Handle error response from the server
+            $('#responseMessageContainer' + activityId).html('<div class="alert alert-danger" role="alert">Failed to save activity. Please try again later.</div>');
+          }
+        });
+      });
+    });
+  </script>
+{% endfor %}
+
+{% for activity in activities %}
+<!-- Modal -->
+<div class="modal fade" id="deleteActivityModal{{ activity.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteActivityModalLabel{{ activity.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteActivityModalLabel{{ activity.id }}">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the Activity "{{ activity.name }}"?
+            </div>
+            <div class="row">
+                <div class="col-md-12">              
+                    <div id="responseMessageContainer{{ activity.id }}"></div>
+                </div>          
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger deleteActivityBtn" data-activity-id="{{ activity.id }}">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+    $(document).ready(function() {
+        // Handle delete button click
+        $('.deleteActivityBtn').click(function() {
+            var activityId = $(this).data('activity-id');
+            // Send delete request to the server
+            $.ajax({
+                url: '{% url "delete_activity" %}', // Replace with your server endpoint
+                method: 'POST',
+                data: {
+                    activity_id: activityId,
+                },
+                success: function(response) {
+                    // Display response message
+                    $('#responseMessageContainer{{ activityId }}').html('<div class="alert alert-' + (response.status ? 'success' : 'danger') + '" role="alert">' + response.message + '</div>');
+                    // Close the modal
+                    $('#deleteActivityModal{{ activityId }}').modal('hide');
+                    location.reload(true);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response from the server
+                    $('#responseMessageContainer{{ activityId }}').html('<div class="alert alert-danger" role="alert">Failed to delete activity. Please try again later.</div>');
+                }
+            });
+        });
+    });
+</script>
+
+
+{% include 'admin_template/datatable.html' %}
+{% endblock main_content %}

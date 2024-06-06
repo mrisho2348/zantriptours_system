@@ -1,0 +1,36 @@
+{% extends 'admin_template/base_template.html' %}
+{% load custom_filters %}
+{% block title %}
+About Information
+{% endblock title %}
+{% block breadcrumb %}
+{% include "admin_template/modal_form.html" %}
+{% endblock breadcrumb %}
+{% load static %}
+{% block main_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">              
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ form.content|add_class:"form-control" }}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% include 'admin_template/datatable.html' %}
+{% endblock main_content %}

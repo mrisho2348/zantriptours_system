@@ -1,0 +1,104 @@
+{% load static %}
+<footer>
+    <div class="footer">
+       <div class="container">
+          <div class="row">
+             <div class="col-md-12 ">
+                <div class="letter text_align_left">
+                   <h2>Contact Us</h2>
+                </div>
+             </div>
+             <div class="col-md-5">
+                <form id="contactForm" class="main_form" method="POST">
+                  {% csrf_token %}
+                   <div class="row">
+                      <div class="col-md-12 ">
+                         <input class="cont_in" placeholder="Full Name" type="text" name="name"> 
+                      </div>
+                      <div class="col-md-12">
+                         <input class="cont_in" placeholder="Your Email" type="email" name="email"> 
+                      </div>
+                      <div class="col-md-12">
+                         <input class="cont_in" placeholder="Phone Number" type="text" name="phone_number">                          
+                      </div>
+                      <div class="col-md-12">
+                         <input class="cont_in" placeholder="Your Words" type="text" name="words"> 
+                      </div>
+                      <div class="col-md-12">
+                         <button class="send_btnt" type="submit">Send</button>
+                      </div>
+                   </div>
+                </form>
+                <div id="responseMessage" style="display:none;"></div>
+             </div>
+             <div class="col-md-4 ">
+                <ul class="conta">
+                   <li><i class="fa fa-map-marker" aria-hidden="true"></i>Locations 
+                   </li>
+                   <li><i class="fa fa-phone" aria-hidden="true"></i>+255 779 797 122</li>
+                   <li> <i class="fa fa-envelope" aria-hidden="true"></i><a href="Javascript:void(0)"> demo@gmail.com</a></li>
+                </ul>
+             </div>
+             <div class="col-md-3">
+                <div class="follow text_align_left">
+                   <h3>Follow Us</h3>
+                   <ul class="social_icon ">
+                      <li><a href="Javascript:void(0)"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                      <li><a href="Javascript:void(0)"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                      <li><a href="Javascript:void(0)"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                      <li><a href="Javascript:void(0)"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                   </ul>
+                </div>
+             </div>
+             <div class="col-md-12">
+                <div class="follow letter text_align_left">
+                   <h3>Newsletter</h3>
+                   <form class="form_subscri">
+                      <input class="newsl" placeholder="Email" type="text" name="Email">
+                      <button class="subsci_btn">subscribe</button>
+                   </form>
+                </div>
+             </div>
+          </div>
+       </div>
+       <div class="copyright">
+          <div class="container">
+             <div class="row">
+                <div class="col-md-12">
+                   <p>© 2024 All Rights Reserved. Design by <a href="#"> Zan Trip & Tours Team</a></p>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+ </footer>
+
+ <script>
+   $(document).ready(function() {
+       $('#contactForm').submit(function(event) {
+           event.preventDefault(); // Prevent the default form submission
+   
+           $.ajax({
+               type: 'POST',
+               url: '{% url "contact_ajax" %}', // Django URL to handle the form submission
+               data: {
+                   'name': $('input[name="name"]').val(),
+                   'email': $('input[name="email"]').val(),
+                   'phone_number': $('input[name="phone_number"]').val(),
+                   'words': $('input[name="words"]').val(),
+                   'csrfmiddlewaretoken': '{{ csrf_token }}'
+               },
+               success: function(response) {
+                   if (response.status === 'success') {
+                       $('#responseMessage').html('<p>Thank you for contacting us!</p>').show();
+                   } else {
+                       $('#responseMessage').html('<p>There was an error. Please try again.</p>').show();
+                   }
+               },
+               error: function() {
+                   $('#responseMessage').html('<p>There was an error. Please try again.</p>').show();
+               }
+           });
+       });
+   });
+   </script>

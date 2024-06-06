@@ -1,0 +1,54 @@
+{% extends "base_template_landing.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block landing_page %}
+    <!-- packages -->
+    <div class="packages">
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12">
+               <div class="titlepage text_align_center">
+                  <h2>World Place Hotels</h2>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            {% for hotel in hotels %}
+            <div class="col-md-6">
+               <div id="ho_img" class="packages_box" data-aos="fade-{% if forloop.counter|divisibleby:2 %}left{% else %}right{% endif %}">
+
+                  <figure>
+                      {% if hotel.image %}
+                          <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" />
+                      {% else %}
+                          <img src="{% static 'images/default-hotel.jpg' %}" alt="{{ hotel.name }}" />
+                      {% endif %}
+                  </figure>
+                  <div class="tuscany">
+                     <div class="tusc text_align_left">
+                        <div class="italy">
+                           <h3>{{ hotel.name }}</h3>
+                           <span><img src="{% static 'images/loca.png' %}" alt="#"/> {{ hotel.location }}</span>
+                        </div>
+                        <div class="italy_right">
+                           <h3>Price</h3>
+                           <span>${{ hotel.price }}</span>
+                        </div>
+                     </div>
+                     <p>{{ hotel.description|truncate_description:30 }}</p>
+                     <div class="tusc">
+                        <a class="read_more" href="#">Read More</a>
+                        <a class="read_more" href="{% url 'book_hotel' hotel.id %}">Book Now</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            {% endfor %}
+            <div class="col-md-12">
+               <a class="read_more" href="{% url 'all_hotels' %}">See More</a>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end packages -->
+{% endblock landing_page %}

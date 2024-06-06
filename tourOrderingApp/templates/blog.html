@@ -1,0 +1,47 @@
+{% extends "base_template_landing.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block landing_page %}
+     <!-- packages -->
+     <div class="packages">
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12">
+               <div class="titlepage text_align_center ">
+                  <h2>Our transport service</h2>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            {% for service in transport_services %}
+            <div class="col-md-6">
+               <div id="ho_img" class="packages_box" data-aos="{% cycle 'fade-right' 'fade-left' %}">
+                  <figure><img src="{{ service.image.url }}" alt="{{ service.name }}"/></figure>
+                  <div class="tuscany">
+                     <div class="tusc text_align_left">
+                        <div class="italy">
+                           <h3>{{ service.name }}</h3>
+                           <span><img src="{% static 'images/loca.png' %}" alt="#"/> {{ service.location }}</span>
+                        </div>
+                        <div class="italy_right">
+                           <h3>Price</h3>
+                           <span>${{ service.price }}</span>
+                        </div>
+                     </div>
+                     <p>{{ service.description|truncate_description:30 }}</p>
+                     <div class="tusc">
+                        <a class="read_more" href="Javascript:void(0)">Read More</a>
+                        <a class="read_more" href="{% url 'book_transport' service.id %}">Book Now</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            {% endfor %}
+            <div class="col-md-12">
+               <a class="read_more" href="{% url 'all_transport' %}">See More</a>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end packages -->
+{% endblock landing_page %}

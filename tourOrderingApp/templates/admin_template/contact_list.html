@@ -1,0 +1,58 @@
+{% extends 'admin_template/base_template.html' %}
+
+{% block title %}
+Contact Requests
+{% endblock title %}
+{% block breadcrumb %}
+{% include "admin_template/modal_form.html" %}
+{% endblock breadcrumb %}
+{% load static %}
+{% block main_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3  class="header-title text-center mt-0 mb-1  text-uppercase">Contact Requests</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover text-nowrap table-responsive-sm table-bordered table-striped table-sm  display" id="example" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone Number</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contact in contacts %}
+                                <tr>
+                                    <td>{{ contact.id }}</td>
+                                    <td>{{ contact.name }}</td>
+                                    <td>{{ contact.email }}</td>
+                                    <td>{{ contact.phone_number }}</td>
+                                    <td  class="description">{{ contact.message }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .description {
+        word-wrap: break-word; /* Ensures long words will break and wrap */
+        white-space: pre-wrap; /* Preserves whitespace and ensures wrapping */
+        max-width: 300px; /* Optional: Limit the max width of the description */
+    }
+</style>
+
+{% include 'admin_template/datatable.html' %}
+{% endblock main_content %}

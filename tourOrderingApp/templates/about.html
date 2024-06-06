@@ -1,0 +1,20 @@
+{% extends "base_template_landing.html" %}
+{% block landing_page %}
+<div class="about">
+   <div class="container">
+      <div class="row">
+         <div class="col-md-12">
+            <div class="titlepage text_align_center">
+               <h2>About Our Company</h2>
+            </div>
+         </div>
+         <div class="col-md-10 offset-md-1">
+            <div class="about_text text_align_center">
+               <p>{{ about_info.content }}</p>
+               <a class="read_more" href="#">Read More</a>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock landing_page %}

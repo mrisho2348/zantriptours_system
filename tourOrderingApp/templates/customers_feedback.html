@@ -1,0 +1,35 @@
+{% extends "base_template_landing.html" %}
+{% load static %}
+{% block landing_page %}
+<div class="contact">
+   <div class="container">
+      <div class="row">
+         <div class="col-md-12 ">
+            <div class="titlepage text_align_center">
+               <h2>Send Feedback</h2>
+            </div>
+         </div>
+         <div class="col-md-8 offset-md-2">
+            <form id="request" class="main_form" method="post">
+               {% csrf_token %}
+               {{ form.as_p }}
+               <div class="col-md-12">
+                  <button class="send_btnt" type="submit">Send Feedback</button>
+               </div>
+               {% if messages %}
+               <div class="col-12">
+                   {% for message in messages %}
+                       {% if message.tags == 'error' %}
+                           <div class="alert alert-danger">{{ message }}</div>
+                       {% elif message.tags == 'success' %}
+                           <div class="alert alert-primary">{{ message }}</div>
+                       {% endif %}
+                   {% endfor %}
+               </div>
+               {% endif %}
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock landing_page %}

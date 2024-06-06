@@ -1,0 +1,124 @@
+{% extends "base_template_landing.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block landing_page %}
+    <!-- packages -->
+    <div class="packages">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="titlepage text_align_center">
+                        <h2>Book {{ hotel.name }} Hotel</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">        
+                <!-- Hotel Information Column -->
+                <div class="col-md-6">
+                    <div id="ho_img" class="packages_box" data-aos="fade-{% if hotel.id|divisibleby:2 %}left{% else %}right{% endif %}">
+
+                        <figure>
+                            {% if hotel.image %}
+                                <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" />
+                            {% else %}
+                                <img src="{% static 'images/default-hotel.jpg' %}" alt="{{ hotel.name }}" />
+                            {% endif %}
+                        </figure>
+                        <div class="tuscany">
+                            <div class="tusc text_align_left">
+                                <div class="italy">
+                                    <h3>{{ hotel.name }}</h3>
+                                    <span><img src="{% static 'images/loca.png' %}" alt="#"/> {{ hotel.location }}</span>
+                                </div>
+                                <div class="italy_right">
+                                    <h3>Price</h3>
+                                    <span>${{ hotel.price }}</span>
+                                </div>
+                            </div>
+                            <p>{{ hotel.description|truncate_description:30 }}</p>
+                        </div>
+                    </div>
+                </div>  
+
+                <!-- Booking Form Column -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Book {{ hotel.name }}</h3>
+                            <p><strong>Note:</strong> Fields marked with <span style="color: red;">*</span> are required.</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="bookingMessageContainer"></div>
+                            <form id="bookingForm" method="post" action="{% url 'submit_booking' hotel.id %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="name">Your Name <span style="color: red;">*</span></label>
+                                    <input type="text" id="name" name="name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Your Email <span style="color: red;">*</span></label>
+                                    <input type="email" id="email" name="email" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number <span style="color: red;">*</span></label>
+                                    <input type="tel" id="phone" name="phone" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gender">Gender <span style="color: red;">*</span></label>
+                                    <select id="gender" name="gender" class="form-control select2bs4" style="width: 100%;" required>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nationality">Nationality <span style="color: red;">*</span></label>
+                                    <select id="nationality" name="nationality" class="form-control select2bs4" style="width: 100%;" required>
+                                        {% for country in countries %}
+                                            <option value="{{ country.id }}">{{ country.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password <span style="color: red;">*</span></label>
+                                    <input type="password" id="password" name="password" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergency_contact_name">Emergency Contact Name <span style="color: red;">*</span></label>
+                                    <input type="text" id="emergency_contact_name" name="emergency_contact_name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergency_contact">Emergency Contact Number <span style="color: red;">*</span></label>
+                                    <input type="tel" id="emergency_contact" name="emergency_contact" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="check-in">Check-in Date <span style="color: red;">*</span></label>
+                                    <input type="date" id="check-in" name="check_in" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="check-out">Check-out Date <span style="color: red;">*</span></label>
+                                    <input type="date" id="check-out" name="check_out" class="form-control" required>
+                                </div>
+                                <button type="submit" id="bookNowButton" class="btn btn-primary btn-block">Book Now</button>
+                            </form>
+                        </div>
+                        {% if messages %}
+                        <div class="col-12">
+                            {% for message in messages %}
+                                {% if message.tags == 'error' %}
+                                    <div class="alert alert-danger">{{ message }}</div>
+                                {% elif message.tags == 'success' %}
+                                    <div class="alert alert-primary">{{ message }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                   
+                </div>             
+            </div>
+        </div>
+    </div>    
+    
+    <!-- end packages -->
+{% endblock landing_page %}

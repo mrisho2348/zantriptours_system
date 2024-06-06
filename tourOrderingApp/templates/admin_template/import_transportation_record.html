@@ -1,0 +1,26 @@
+{% extends 'admin_template/base_template.html' %}
+
+{% block title %}
+Transportation Type
+{% endblock title %}
+
+{% block main_content %}
+{% load static %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left column -->
+        <div class="col-md-12">
+            <!-- General form elements -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Import Transportation Type Records</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- Form start -->
+                {% url 'import_transportation_record' as action_path %}
+                {% include 'admin_template/form_template.html' with messages=messages forms=forms action_path=action_path button_text="Import" %}
+            </div>        
+        </div>
+    </div>              
+</div><!-- /.container-fluid -->
+{% endblock main_content %}

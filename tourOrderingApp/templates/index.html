@@ -1,0 +1,204 @@
+{% extends "base_template_landing.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block landing_page %}
+    <!-- top -->
+    <div class="full_bg">
+      <div class="slider_main">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <!-- carousel code -->
+                  <div id="carouselExampleIndicators" class="carousel slide">
+                     <ol class="carousel-indicators">
+                        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                     </ol>
+                     <div class="carousel-inner">
+                        <!-- first slide -->
+                        <div class="carousel-item active">
+                           <div class="carousel-caption relative">
+                              <div class="row">
+                                 <div  class="col-md-10 offset-md-1">
+                                    <div class="board">
+                                       <h1>Now start <br>Your traveling </h1>
+                                       <p>when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed towhen looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to</p>
+                                       <a class="read_more" href="{% url "about" %}">Read More</a>
+                                       <a class="read_more" href="{% url "contact" %}">Contact us</a>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- second slide -->
+                        <div class="carousel-item">
+                           <div class="carousel-caption relative">
+                              <div class="row">
+                                 <div  class="col-md-10 offset-md-1">
+                                    <div class="board">
+                                       <h1>Now start <br>Your traveling </h1>
+                                       <p>when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed towhen looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to</p>
+                                       <a class="read_more" href="{% url "about" %}">Read More</a>
+                                       <a class="read_more" href="{% url "contact" %}">Contact us</a>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- third slide-->
+                        <div class="carousel-item">
+                           <div class="carousel-caption relative">
+                              <div class="row">
+                                 <div  class="col-md-10 offset-md-1">
+                                    <div class="board">
+                                       <h1>Now start <br>Your traveling </h1>
+                                       <p>when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed towhen looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to</p>
+                                       <a class="read_more" href="{% url "about" %}">Read More</a>
+                                       <a class="read_more" href="{% url "contact" %}">Contact us</a>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- controls -->
+                     <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                     <i class="fa fa-angle-left" aria-hidden="true"></i>
+                     <span class="sr-only">Previous</span>
+                     </a>
+                     <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                     <i class="fa fa-angle-right" aria-hidden="true"></i>
+                     <span class="sr-only">Next</span>
+                     </a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end banner -->
+
+   <!-- packages -->
+   <div class="packages">
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12">
+               <div class="titlepage text_align_center">
+                  <h2>World Place Hotels</h2>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            {% for hotel in hotels %}
+            <div class="col-md-6">
+               <div id="ho_img" class="packages_box" data-aos="fade-{% if forloop.counter|divisibleby:2 %}left{% else %}right{% endif %}">
+
+                  <figure>
+                      {% if hotel.image %}
+                          <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" />
+                      {% else %}
+                          <img src="{% static 'images/default-hotel.jpg' %}" alt="{{ hotel.name }}" />
+                      {% endif %}
+                  </figure>
+                  <div class="tuscany">
+                     <div class="tusc text_align_left">
+                        <div class="italy">
+                           <h3>{{ hotel.name }}</h3>
+                           <span><img src="{% static 'images/loca.png' %}" alt="#"/> {{ hotel.location }}</span>
+                        </div>
+                        <div class="italy_right">
+                           <h3>Price</h3>
+                           <span>${{ hotel.price }}</span>
+                        </div>
+                     </div>
+                     <p>{{ hotel.description|truncate_description:30 }}</p>
+                     <div class="tusc">
+                        <a class="read_more" href="#">Read More</a>
+                        <a class="read_more" href="{% url 'book_hotel' hotel.id %}">Book Now</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            {% endfor %}
+            <div class="col-md-12">
+               <a class="read_more" href="{% url 'all_hotels' %}">See More</a>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end packages -->
+   <!-- about -->
+   <div class="about">
+      <div class="container">
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="titlepage text_align_center">
+                      <h2>About Our Company</h2>
+                  </div>
+              </div>
+              <div class="col-md-10 offset-md-1">
+                  <div class="about_text text_align_center">
+                      <p>{{ about_info.content|truncate_words:1000 }}</p>
+                      <a class="read_more" href="{% url "about" %}">Read More</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+   <!-- end about -->
+   <!-- customers -->
+   <div class="customers">
+      <div class="container">
+         <div class="row">
+            <div class="col-sm-12">
+               <div class="titlepage text_align_center">
+                  <h2>Customers Says </h2>
+               </div>
+            </div>
+         </div>
+         <!-- start slider section -->
+         <div class="row">
+            <div class="col-md-12">
+               <div id="myCarousel" class="carousel slide customers_banne" data-ride="carousel">
+                  <ol class="carousel-indicators">
+                     {% for feedback in feedbacks %}
+                     <li data-target="#myCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+                     {% endfor %}
+                  </ol>
+                  <div class="carousel-inner">
+                     {% for feedback in feedbacks %}
+                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <div class="container-fluid">
+                           <div class="carousel-caption relative">
+                              <div class="test_box text_align_center">
+                                 <p>{{ feedback.message }}</p>
+                                 {% if feedback.image %}
+                                 <img src="{{ feedback.image.url }}" alt="{{ feedback.name }}" />  <!-- Use the image field -->
+                                 {% else %}
+                                 <img src="{% static 'images/default_avatar.png' %}" alt="Default Avatar" />  <!-- Use a default avatar image -->
+                                 {% endif %}
+                                 <h4>{{ feedback.name }}</h4>
+                                 <span>Industry's standard </span>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     {% endfor %}
+                  </div>
+                  <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+                  <i class="fa fa-angle-right" aria-hidden="true"></i>
+                  <span class="sr-only">Next</span>
+                  </a>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end customers -->
+{% endblock landing_page %}

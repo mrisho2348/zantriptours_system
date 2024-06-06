@@ -1,0 +1,36 @@
+{% extends 'admin_template/base_template.html' %}
+{% load static %}
+
+{% block title %}
+    Add Hotel
+{% endblock title %}
+
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Full-width column for form -->
+                <div class="col-md-12">
+                    <!-- Form card -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Add Hotel</h3>
+                        </div>
+                        <!-- Form start -->
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                {{ form.as_p }}
+                            </div>
+                            <!-- Form footer -->
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock main_content %}

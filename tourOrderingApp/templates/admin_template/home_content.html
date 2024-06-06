@@ -1,0 +1,193 @@
+ 
+{% extends 'admin_template/base_template.html' %}
+{% block page_title %}
+HOME
+{% endblock page_title %}
+{% block main_content %}
+{% load static %}
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-6 col-6">
+            <!-- Hotel Bookings Box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ hotel_bookings_count }}</h3>
+                    <p>Total Hotel Bookings</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-hotel"></i>
+                </div>
+                <a href="{% url 'booking_list' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-6">
+            <!-- Transport Bookings Box -->
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>{{ transport_bookings_count }}</h3>
+                    <p>Total Transport Bookings</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-bus"></i>
+                </div>
+                <a href="{% url 'transport_booking_list' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+      
+       <div class="row">
+        <div class="col-lg-6">
+          <!-- PIE CHART -->
+          <div class="card card-primary">
+              <div class="card-header">
+                  <h3 class="card-title">TOTAL HOTEL BOOKING IN EACH MONTH</h3>
+                  <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                          <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove">
+                          <i class="fas fa-times"></i>
+                      </button>
+                  </div>
+              </div>
+              <div class="card-body">
+                  <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+              </div>
+              <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+      </div>
+      <div class="col-lg-6">
+        <!-- PIE CHART -->
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">TOTAL TRANSPORT BOOKINGS IN EACH MONTH</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="pieChart1" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+
+    
+    </div><!-- /.container-fluid -->
+  </section>
+
+  {% endblock main_content %}
+
+  {% block customer_js %}
+  <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '{% url "bookings_per_month" %}',
+            method: 'GET',
+            success: function(data) {
+                const ctx = document.getElementById('pieChart').getContext('2d');
+                const pieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.months,
+                        datasets: [{
+                            data: data.counts,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)',
+                                // Add more colors if needed
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)',
+                                // Add more colors if needed
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Hotel Bookings Per Month'
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+<script>
+  $(document).ready(function () {
+      $.ajax({
+          url: '{% url "transport_bookings_per_month" %}',
+          method: 'GET',
+          success: function(data) {
+              const ctx = document.getElementById('pieChart1').getContext('2d');
+              const pieChart = new Chart(ctx, {
+                  type: 'pie',
+                  data: {
+                      labels: data.months,
+                      datasets: [{
+                          data: data.counts,
+                          backgroundColor: [
+                              'rgba(250, 80, 32, 0.2)',
+                              'rgba(50, 62, 35, 0.2)',
+                              'rgba(250, 06, 186, 0.2)',
+                              'rgba(70, 92, 92, 0.2)',
+                              'rgba(123, 02, 55, 0.2)',
+                              'rgba(155, 59, 164, 0.2)',
+                              // Add more colors if needed
+                          ],
+                          borderColor: [
+                              'rgba(250, 80, 32, 0.2)',
+                              'rgba(50, 62, 35, 0.2)',
+                              'rgba(250, 06, 186, 0.2)',
+                              'rgba(70, 92, 92, 0.2)',
+                              'rgba(123, 02, 55, 0.2)',
+                              'rgba(155, 59, 164, 0.2)',
+                              // Add more colors if needed
+                          ],
+                          borderWidth: 1
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      plugins: {
+                          legend: {
+                              position: 'top',
+                          },
+                          title: {
+                              display: true,
+                              text: 'Transport Bookings Per Month'
+                          }
+                      }
+                  }
+              });
+          }
+      });
+  });
+</script>
+{% endblock customer_js %}
