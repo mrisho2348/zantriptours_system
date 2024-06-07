@@ -32,9 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'tourOrderingApp',
-    'jazzmin',
-     'admin_tools_stats',  
+    'tourOrderingApp', 
     'django_nvd3',
     'django_light',
     'django.contrib.admin',
@@ -42,8 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',    
-    'admin_honeypot',
+    'django.contrib.staticfiles',   
     'import_export',
 ]
 

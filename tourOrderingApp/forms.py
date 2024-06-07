@@ -1,6 +1,5 @@
 from django import forms
 from django.core.validators import FileExtensionValidator
-from django_ckeditor_5.widgets import CKEditor5Widget
 from tourOrderingApp.models import About, ContactRequest, Feedback, Hotel
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _

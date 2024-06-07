@@ -35,15 +35,14 @@
               </p>
             </a>
           </li>             
-        <li class="nav-item">
-          {% url 'booking_list' as booking_list_url %}           
-          <a href="{{ booking_list_url }}" class="nav-link {% if request.path == booking_list_url %}active{% endif %}">
-              <i class="nav-icon fas fa-hotel"></i> 
-              <p>
-                 Hotel booking list
-              </p>
-          </a>
-      </li>
+          <li class="nav-item">
+            {% url 'booking_list' as booking_list_url %}           
+            <a href="{{ booking_list_url }}" class="nav-link {% if request.path == booking_list_url %}active{% endif %}">
+                <i class="nav-icon fas fa-hotel"></i> 
+                <p>Hotel booking list</p>
+                <span id="hotelBookingTotal" class="badge badge-danger"  title="total today hotel booking"><i class="fas fa-spinner fa-spin"></i></span> <!-- Span element for total hotel bookings with spinner icon -->
+            </a>
+        </li>
        
         <li class="nav-item">
           {% url 'hotel_list' as hotel_list %}           
@@ -75,8 +74,9 @@
         <a href="{{ transport_booking_list_url }}" class="nav-link{% if request.path == transport_booking_list_url %} active{% endif %}">                     
             <i class="nav-icon fas fa-calendar-check"></i> <!-- Changed to 'fa-calendar-check' for booking -->
             <p>Transport booking list</p> <!-- Updated display text -->
+            <span id="transportBookingTotal" class="badge badge-danger"  title="total today transport booking"><i class="fas fa-spinner fa-spin"></i></span> <!-- Span element for total transport bookings with spinner icon -->
         </a>
-    </li>    
+    </li>
     <li class="nav-item">
       {% url 'contact_list' as contact_list %}
       <a href="{{ contact_list }}" class="nav-link{% if request.path == contact_list %} active {% endif %}">
@@ -104,3 +104,47 @@
     </div>
     <!-- /.sidebar -->
   </aside>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Function to fetch and update total transport bookings
+        function updateTransportBookingTotal() {
+            $.ajax({
+                url: '{% url "fetch_transport_booking_total" %}',  // Update with your Django endpoint for fetching total transport bookings
+                type: 'GET',
+                success: function(response) {
+                    $('#transportBookingTotal').text(response.total_bookings);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching total transport bookings:', error);
+                }
+            });
+        }
+
+        // Function to fetch and update total hotel bookings
+        function updateHotelBookingTotal() {
+            $.ajax({
+                url: '{% url "fetch_hotel_booking_total" %}',  // Update with your Django endpoint for fetching total hotel bookings
+                type: 'GET',
+                success: function(response) {
+                    $('#hotelBookingTotal').text(response.total_bookings);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching total hotel bookings:', error);
+                }
+            });
+        }
+
+        // Call the functions initially
+        updateTransportBookingTotal();
+        updateHotelBookingTotal();
+
+        // Call the functions every minute
+        setInterval(function() {
+            updateTransportBookingTotal();
+            updateHotelBookingTotal();
+        }, 60000);  // 60000 milliseconds = 1 minute
+    });
+</script>

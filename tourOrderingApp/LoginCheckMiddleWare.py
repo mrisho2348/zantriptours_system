@@ -30,7 +30,7 @@ class LoginCheckMiddleWare(MiddlewareMixin):
                 return HttpResponseRedirect(reverse("home"))
         else:
             # If the user is not authenticated, allow access to tourOrderingApp.views and specific paths
-            if modulename == "django.contrib.auth.views" or modulename == "tourOrderingApp.views" or request.path in [reverse("login"), reverse("DoLogin"), reverse("logout_user")]:
+            if modulename == "django.contrib.auth.views" or modulename == "tourOrderingApp.views" or  modulename == "django.views.static" or request.path in [reverse("login"), reverse("DoLogin"), reverse("logout_user")]:
                 pass
             else:
                 return HttpResponseRedirect(reverse("home"))

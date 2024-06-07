@@ -32,6 +32,8 @@ Hotel Booking List
                                     <th>Check-in Date</th>
                                     <th>Check-out Date</th>
                                     <th>Booking Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -49,6 +51,33 @@ Hotel Booking List
                                     <td>{{ booking.check_in_date }}</td>
                                     <td>{{ booking.check_out_date }}</td>
                                     <td>{{ booking.booking_date }}</td>
+                                    <td>
+                                        <form method="POST" action="{% url 'update_hotel_booking_status' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                                            <input type="hidden" name="is_active" value="{% if booking.is_active %}1{% else %}0{% endif %}">
+                                            <input
+                                                type="checkbox"
+                                                data-toggle="switchbutton"
+                                                data-size="xs"
+                                                data-onlabel="Completed"
+                                                data-offlabel="Pending"
+                                                data-offstyle="danger"
+                                                data-onstyle="success"
+                                                {% if booking.is_active %}checked{% endif %}
+                                                onchange="submitForm(this)"
+                                            >
+                                        </form>
+                                    </td>
+                                    <td >
+                                        <button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#editModal{{ booking.id }}"  data-toggle="tooltip" title="Edit">
+                                            <i class="fa fa-edit text-white"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteBookingModal{{ booking.id }}"  data-toggle="tooltip" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>   
+                                      
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -60,6 +89,186 @@ Hotel Booking List
     </div>
 </div>
 
-
+{% for booking in bookings %}
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal{{ booking.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Booking</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="messageContainer{{ booking.id }}" class="alert" style="display: none;"></div>
+                <form id="editBookingForm{{ booking.id }}">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="customer_name{{ booking.id }}">Customer Name</label>
+                                <input type="text" class="form-control" id="customer_name{{ booking.id }}" name="customer_name" value="{{ booking.customer_name }}">
+                                <input type="hidden" class="form-control" id="booking_id{{ booking.id }}" name="booking_id" value="{{ booking.id }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="customer_email{{ booking.id }}">Customer Email</label>
+                                <input type="email" class="form-control" id="customer_email{{ booking.id }}" name="customer_email" value="{{ booking.customer_email }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="nationality{{ booking.id }}">Nationality</label>
+                                <select class="form-control" id="nationality{{ booking.id }}" name="nationality">
+                                    {% for country in countries %}
+                                        <option value="{{ country.id }}" {% if booking.nationality == country %}selected{% endif %}>{{ country.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="phone_number{{ booking.id }}">Phone Number</label>
+                                <input type="text" class="form-control" id="phone_number{{ booking.id }}" name="phone_number" value="{{ booking.phone_number }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="passport_number{{ booking.id }}">Passport Number</label>
+                                <input type="text" class="form-control" id="passport_number{{ booking.id }}" name="passport_number" value="{{ booking.passport_number }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="emergency_contact_name{{ booking.id }}">Emergency Contact Name</label>
+                                <input type="text" class="form-control" id="emergency_contact_name{{ booking.id }}" name="emergency_contact_name" value="{{ booking.emergency_contact_name }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="emergency_contact_number{{ booking.id }}">Emergency Contact Number</label>
+                                <input type="text" class="form-control" id="emergency_contact_number{{ booking.id }}" name="emergency_contact_number" value="{{ booking.emergency_contact_number }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="gender{{ booking.id }}">Gender</label>
+                                <input type="text" class="form-control" id="gender{{ booking.id }}" name="gender" value="{{ booking.gender }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="check_in_date{{ booking.id }}">Check-in Date</label>
+                                <input type="date" class="form-control" id="check_in_date{{ booking.id }}" name="check_in_date" value="{{ booking.check_in_date|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="check_out_date{{ booking.id }}">Check-out Date</label>
+                                <input type="date" class="form-control" id="check_out_date{{ booking.id }}" name="check_out_date" value="{{ booking.check_out_date|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="booking_date{{ booking.id }}">Booking Date</label>
+                                <input type="datetime-local" class="form-control" id="booking_date{{ booking.id }}" name="booking_date" value="{{ booking.booking_date|date:'Y-m-d\\TH:i' }}">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-block" onclick="updateBooking({{ booking.id }})">Save changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<!-- AJAX script -->
+<script>
+    function updateBooking(bookingId) {
+        var formData = $("#editBookingForm" + bookingId).serialize();
+        $.ajax({
+            url: '{% url "update_booking" %}',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                var messageContainer = $("#messageContainer" + bookingId);
+                if (response.status) {
+                    messageContainer.removeClass('alert-danger').addClass('alert-success').text('Booking updated successfully!').show();
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000); // Reload after 2 seconds
+                } else {
+                    messageContainer.removeClass('alert-success').addClass('alert-danger').text(response.message || 'Failed to update booking.').show();
+                }
+            },
+            error: function() {
+                var messageContainer = $("#messageContainer" + bookingId);
+                messageContainer.removeClass('alert-success').addClass('alert-danger').text('Error updating booking.').show();
+            }
+        });
+    }
+</script>
+{% for booking in bookings %}
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteBookingModal{{ booking.id }}" tabindex="-1" aria-labelledby="deleteBookingModalLabel{{ booking.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteBookingModalLabel{{ booking.id }}">Confirm Deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this <b>{{ booking }}</b> booking?
+                    <div id="deleteMessageContainer{{ booking.id }}" class="alert" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteBooking({{ booking.id }})">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+<script>
+    function deleteBooking(bookingId) {
+        $.ajax({
+            url: '{% url "delete_booking" %}', // Ensure this URL name matches your URLconf
+            type: 'POST',
+            data: {
+                'booking_id': bookingId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token for security
+            },
+            success: function(response) {
+                var messageContainer = $("#deleteMessageContainer" + bookingId);
+                if (response.status) {
+                    messageContainer.removeClass('alert-danger').addClass('alert-success').text('Booking deleted successfully!').show();
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000); // Reload after 2 seconds
+                } else {
+                    messageContainer.removeClass('alert-success').addClass('alert-danger').text(response.message || 'Failed to delete booking.').show();
+                }
+            },
+            error: function() {
+                var messageContainer = $("#deleteMessageContainer" + bookingId);
+                messageContainer.removeClass('alert-success').addClass('alert-danger').text('Error deleting booking.').show();
+            }
+        });
+    }
+</script>
+<script>
+    function submitForm(checkbox) {
+        checkbox.form.submit();
+    }
+</script>
 {% include 'admin_template/datatable.html' %}
 {% endblock main_content %}

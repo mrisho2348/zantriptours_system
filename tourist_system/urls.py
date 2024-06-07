@@ -13,9 +13,6 @@ urlpatterns = [
     path('Hod/', include('tourist_system.admin_urls')),
     path('Tourist/', include('tourist_system.tourist_urls')),
     path('accounts/', include('django.contrib.auth.urls')), 
-    path('admin_tools_stats/', include('admin_tools_stats.urls')),
-    re_path(r'^admin/', include('admin_honeypot.urls')),
-    path("ckeditor5/", include('django_ckeditor_5.urls')),
     path('tourist_system/', admin.site.urls),
     path('i18n/', set_language, name='set_language'),  # Add language switcher URL pattern
     re_path(r'^static/(?P<path>.*)$', serve, {

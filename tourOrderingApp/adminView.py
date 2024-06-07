@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.templatetags.static import static
 import os
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
@@ -33,10 +34,14 @@ from django.db.models.functions import TruncMonth
 def admin_dashboard(request):
     current_year = datetime.now().year
 
-    hotel_bookings_count = HotelBooking.objects.filter(booking_date__year=current_year).count()
-    transport_bookings_count = TransportBooking.objects.filter(booking_date__year=current_year).count()
+    hotel_bookings_count = HotelBooking.objects.filter(booking_date__year=current_year,is_active=True).count()
+    transport_bookings_count = TransportBooking.objects.filter(booking_date__year=current_year,is_active=True).count()
+    transport_count = Transport.objects.all().count()
+    hotel_count = Hotel.objects.all().count()
 
     context = {
+        'transport_count': transport_count,
+        'hotel_count': hotel_count,
         'hotel_bookings_count': hotel_bookings_count,
         'transport_bookings_count': transport_bookings_count,
     }
@@ -238,11 +243,241 @@ def feedback_list(request):
 
 def booking_list(request):
     bookings = HotelBooking.objects.all()
-    return render(request, 'admin_template/booking_list.html', {'bookings': bookings})
+    countries = Country.objects.all()
+    return render(request, 'admin_template/booking_list.html', {'bookings': bookings, 'countries': countries})
+
+@csrf_exempt
+def update_booking(request):
+    if request.method == 'POST':
+        try:
+            booking_id = request.POST.get('booking_id')
+            booking = HotelBooking.objects.get(id=booking_id)
+            
+            # Fetching form data
+            customer_name = request.POST.get('customer_name')
+            customer_email = request.POST.get('customer_email')
+            nationality_id = request.POST.get('nationality')
+            phone_number = request.POST.get('phone_number')
+            passport_number = request.POST.get('passport_number')
+            emergency_contact_name = request.POST.get('emergency_contact_name')
+            emergency_contact_number = request.POST.get('emergency_contact_number')
+            gender = request.POST.get('gender')
+            check_in_date = request.POST.get('check_in_date')
+            check_out_date = request.POST.get('check_out_date')
+            booking_date = request.POST.get('booking_date')
+            
+            # Validate check-in and check-out dates
+            if check_in_date >= check_out_date:
+                return JsonResponse({'status': False, 'message': 'Check-in date must be before check-out date.'})
+
+            # Ensure the edited details do not match an existing record
+            if HotelBooking.objects.exclude(id=booking_id).filter(
+                customer_name=customer_name,
+                customer_email=customer_email,
+                hotel=booking.hotel,
+                check_in_date=check_in_date,
+                check_out_date=check_out_date
+            ).exists():
+                return JsonResponse({'status': False, 'message': 'Booking with these details already exists.'})
+
+            # Update booking details
+            booking.customer_name = customer_name
+            booking.customer_email = customer_email
+            if nationality_id:
+                booking.nationality = Country.objects.get(id=nationality_id)
+            booking.phone_number = phone_number
+            booking.passport_number = passport_number
+            booking.emergency_contact_name = emergency_contact_name
+            booking.emergency_contact_number = emergency_contact_number
+            booking.gender = gender
+            booking.check_in_date = check_in_date
+            booking.check_out_date = check_out_date
+            booking.booking_date = booking_date
+
+            booking.save()
+            return JsonResponse({'status': True, 'message': 'Booking updated successfully.'})
+        
+        except HotelBooking.DoesNotExist:
+            return JsonResponse({'status': False, 'message': 'Booking not found.'})
+        except Country.DoesNotExist:
+            return JsonResponse({'status': False, 'message': 'Invalid nationality selected.'})
+        except ValidationError as e:
+            return JsonResponse({'status': False, 'message': str(e)})
+        except Exception as e:
+            return JsonResponse({'status': False, 'message': 'An error occurred: ' + str(e)})
+
+    return JsonResponse({'status': False, 'message': 'Invalid request method.'})
+
+@csrf_exempt
+def delete_booking(request):
+    if request.method == 'POST':
+        booking_id = request.POST.get('booking_id')
+        try:
+            booking = HotelBooking.objects.get(id=booking_id)
+            booking.delete()
+            return JsonResponse({'status': True})
+        except HotelBooking.DoesNotExist:
+            return JsonResponse({'status': False, 'message': 'Booking does not exist'})
+        except Exception as e:
+            return JsonResponse({'status': False, 'message': str(e)})
+    return JsonResponse({'status': False})
+
+@csrf_exempt
+def update_transport_booking(request):
+    if request.method == 'POST':
+        try:
+            booking_id = request.POST.get('booking_id')
+            booking = TransportBooking.objects.get(id=booking_id)
+            
+            # Fetching form data
+            customer_name = request.POST.get('customer_name')
+            customer_email = request.POST.get('customer_email')
+            nationality_id = request.POST.get('nationality')
+            phone_number = request.POST.get('phone_number')
+            passport_number = request.POST.get('passport_number')
+            emergency_contact_name = request.POST.get('emergency_contact_name')
+            emergency_contact_number = request.POST.get('emergency_contact_number')
+            gender = request.POST.get('gender')
+            check_in_date = request.POST.get('check_in_date')
+            check_out_date = request.POST.get('check_out_date')
+            booking_date = request.POST.get('booking_date')
+            
+            # Validate check-in and check-out dates
+            if check_in_date >= check_out_date:
+                return JsonResponse({'status': False, 'message': 'Check-in date must be before check-out date.'})
+
+            # Ensure the edited details do not match an existing record
+            if TransportBooking.objects.exclude(id=booking_id).filter(
+                customer_name=customer_name,
+                customer_email=customer_email,
+                transport_service=booking.transport_service,
+                check_in_date=check_in_date,
+                check_out_date=check_out_date
+            ).exists():
+                return JsonResponse({'status': False, 'message': 'Booking with these details already exists.'})
+
+            # Update booking details
+            booking.customer_name = customer_name
+            booking.customer_email = customer_email
+            if nationality_id:
+                booking.nationality = Country.objects.get(id=nationality_id)
+            booking.phone_number = phone_number
+            booking.passport_number = passport_number
+            booking.emergency_contact_name = emergency_contact_name
+            booking.emergency_contact_number = emergency_contact_number
+            booking.gender = gender
+            booking.check_in_date = check_in_date
+            booking.check_out_date = check_out_date
+            booking.booking_date = booking_date
+
+            booking.save()
+            return JsonResponse({'status': True, 'message': 'Booking updated successfully.'})
+        
+        except TransportBooking.DoesNotExist:
+            return JsonResponse({'status': False, 'message': 'Booking not found.'})
+        except Country.DoesNotExist:
+            return JsonResponse({'status': False, 'message': 'Invalid nationality selected.'})
+        except ValidationError as e:
+            return JsonResponse({'status': False, 'message': str(e)})
+        except Exception as e:
+            return JsonResponse({'status': False, 'message': 'An error occurred: ' + str(e)})
+
+    return JsonResponse({'status': False, 'message': 'Invalid request method.'})
+
+def fetch_transport_booking_total(request):
+    # Get the start of today in the current timezone
+    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start + timezone.timedelta(days=1)
+
+    # Count all transport bookings made today
+    total_bookings = TransportBooking.objects.filter(booking_date__gte=today_start, booking_date__lt=today_end).count()
+    
+    return JsonResponse({'total_bookings': total_bookings})
+
+def fetch_hotel_booking_total(request):
+    # Get the start of today in the current timezone
+    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start + timezone.timedelta(days=1)
+
+    # Count all hotel bookings made today
+    total_bookings = HotelBooking.objects.filter(booking_date__gte=today_start, booking_date__lt=today_end).count()
+    
+    return JsonResponse({'total_bookings': total_bookings})
+
+def update_hotel_booking_status(request):
+    try:
+        if request.method == 'POST':
+            # Get the user_id and is_active values from POST data
+            booking_id = request.POST.get('booking_id')
+            is_active = request.POST.get('is_active')
+
+            # Retrieve the staff object or return a 404 response if not found
+            staff = get_object_or_404(HotelBooking, id=booking_id)
+
+            # Toggle the is_active status based on the received value
+            if is_active == '1':
+                staff.is_active = False
+            elif is_active == '0':
+                staff.is_active = True
+            else:
+                messages.error(request, 'Invalid request')
+                return redirect('booking_list')  # Make sure 'manage_staffs' is the name of your staff list URL
+
+            staff.save()
+            messages.success(request, 'Status updated successfully')
+        else:
+            messages.error(request, 'Invalid request method')
+    except Exception as e:
+        messages.error(request, f'An error occurred: {str(e)}')
+    # Redirect back to the staff list page
+    return redirect('booking_list')  # Make sure 'manage_staffs' is the name of your staff list URL
+
+def update_transport_booking_status(request):
+    try:
+        if request.method == 'POST':
+            # Get the user_id and is_active values from POST data
+            booking_id = request.POST.get('booking_id')
+            is_active = request.POST.get('is_active')
+
+            # Retrieve the staff object or return a 404 response if not found
+            staff = get_object_or_404(TransportBooking, id=booking_id)
+
+            # Toggle the is_active status based on the received value
+            if is_active == '1':
+                staff.is_active = False
+            elif is_active == '0':
+                staff.is_active = True
+            else:
+                messages.error(request, 'Invalid request')
+                return redirect('transport_booking_list')  # Make sure 'manage_staffs' is the name of your staff list URL
+
+            staff.save()
+            messages.success(request, 'Status updated successfully')
+        else:
+            messages.error(request, 'Invalid request method')
+    except Exception as e:
+        messages.error(request, f'An error occurred: {str(e)}')
+    # Redirect back to the staff list page
+    return redirect('transport_booking_list')  # Make sure 'manage_staffs' is the name of your staff list URL
+
+@csrf_exempt
+def delete_transport_booking(request):
+    if request.method == 'POST':
+        booking_id = request.POST.get('booking_id')
+        try:
+            booking = TransportBooking.objects.get(id=booking_id)
+            booking.delete()
+            return JsonResponse({'status': True})
+        except TransportBooking.DoesNotExist:
+            return JsonResponse({'status': False, 'message': 'Booking does not exist'})
+        except Exception as e:
+            return JsonResponse({'status': False, 'message': str(e)})
+    return JsonResponse({'status': False})
 
 def transport_booking_list(request):
     bookings = TransportBooking.objects.all()
-    return render(request, 'admin_template/transport_booking_list.html', {'bookings': bookings})
+    countries = Country.objects.all()
+    return render(request, 'admin_template/transport_booking_list.html', {'bookings': bookings,'countries':countries})
 
 @csrf_exempt
 def add_hotel(request):

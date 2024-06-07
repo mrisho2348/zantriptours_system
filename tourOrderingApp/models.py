@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db.models.signals import pre_save
 from django.utils import timezone
-from django_ckeditor_5.fields import CKEditor5Field
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -143,7 +143,8 @@ class HotelBooking(models.Model):
     gender = models.CharField(max_length=10, blank=True, null=True) 
     check_in_date = models.DateField()
     check_out_date = models.DateField()
-    booking_date = models.DateTimeField(default=timezone.now)    
+    booking_date = models.DateTimeField(auto_now_add=True) 
+    is_active = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.customer_name} - {self.hotel.name}"     
     
@@ -159,7 +160,8 @@ class TransportBooking(models.Model):
     gender = models.CharField(max_length=10, blank=True, null=True) 
     check_in_date = models.DateField()
     check_out_date = models.DateField()
-    booking_date = models.DateTimeField(default=timezone.now)    
+    booking_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)   
     def __str__(self):
         return f"{self.customer_name} - {self.transport_service.name}"     
     
